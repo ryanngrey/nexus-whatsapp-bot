@@ -37,6 +37,13 @@
 **/.fuse_hidden*
 **/.nfs*
 
+# Bot session and data
+session/
+!session/.gitkeep
+database/data.json
+database/*.tmp
+temp/
+
 # Node.js
 **/node_modules/
 **/npm-debug.log*
