@@ -21,8 +21,46 @@ for (const d of [config.sessionFolder, config.tempFolder, './database']) {
 
 const logger = pino({ level: 'silent' })
 const msgRetry = new NodeCache({ stdTTL: 600 })
+const PAIR_NUMBER = String(config.botNumber).replace(/\D/g, '')
+const useQr = process.argv.includes('--qr') || process.env.USE_QR === '1'
+
 let sock = null
-let pairingTried = false
+let pairingSent = false
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms))
+}
+
+function formatPairCode(code) {
+  const c = String(code || '').replace(/[^A-Z0-9]/gi, '').toUpperCase()
+  if (c.length === 8) return c.slice(0, 4) + '-' + c.slice(4)
+  return String(code)
+}
+
+async function askPairingCode(socket) {
+  if (pairingSent) return
+  if (socket.authState?.creds?.registered) return
+  pairingSent = true
+  try {
+    await sleep(2000)
+    const raw = await socket.requestPairingCode(PAIR_NUMBER)
+    const code = formatPairCode(raw)
+    console.log('\n========================================')
+    console.log('  CODIGO DE PAREAMENTO')
+    console.log('  Numero: ' + PAIR_NUMBER)
+    console.log('  Codigo: ' + code)
+    console.log('========================================')
+    console.log('No celular desse numero:')
+    console.log('WhatsApp > Aparelhos conectados')
+    console.log('> Conectar um aparelho')
+    console.log('> Conectar com numero de telefone')
+    console.log('Digite o codigo: ' + code)
+    console.log('========================================\n')
+  } catch (e) {
+    pairingSent = false
+    console.log('Falha ao gerar codigo de pareamento:', e.message)
+  }
+}
 
 async function start() {
   const { state, saveCreds } = await useMultiFileAuthState(config.sessionFolder)
@@ -46,30 +84,28 @@ async function start() {
 
   sock.ev.on('creds.update', saveCreds)
 
+  if (!state.creds.registered && !useQr) {
+    askPairingCode(sock).catch((e) => console.error('pairing:', e))
+  }
+
   sock.ev.on('connection.update', async (u) => {
     const { connection, lastDisconnect, qr } = u
 
-    if (qr) {
+    if (qr && useQr) {
       console.log('\n================ QR CODE ================\n')
       qrcode.generate(qr, { small: true })
-      console.log('\nEscaneie o QR com o WhatsApp do numero ' + config.botNumber)
+      console.log('\nEscaneie o QR com o WhatsApp do numero ' + PAIR_NUMBER)
       console.log('WhatsApp > Aparelhos conectados > Conectar um aparelho\n')
+    }
 
-      const wantPair = process.argv.includes('--pair') || process.env.PAIRING === '1'
-      if (wantPair && !pairingTried && !state.creds.registered) {
-        pairingTried = true
-        try {
-          const code = await sock.requestPairingCode(config.botNumber)
-          console.log('\nCODIGO DE EMPARELHAMENTO: ' + code + '\n')
-        } catch (e) {
-          console.log('Falha no pairing code, use o QR.', e.message)
-        }
-      }
+    if (qr && !useQr && !state.creds.registered) {
+      askPairingCode(sock).catch((e) => console.error('pairing:', e))
     }
 
     if (connection === 'open') {
       const me = sock.user?.id || ''
       console.log('\n[' + config.botName + '] conectado: ' + me)
+      console.log('Numero configurado: ' + PAIR_NUMBER)
       console.log('Prefixo: ' + (db.get().settings.prefix || config.prefix))
       console.log('Donos: ' + db.get().owners.join(', '))
     }
@@ -78,6 +114,7 @@ async function start() {
       const code = lastDisconnect?.error?.output?.statusCode
       const reason = lastDisconnect?.error?.output?.payload?.error || lastDisconnect?.error?.message
       console.log('Conexao fechada:', code, reason || '')
+      pairingSent = false
       if (code === DisconnectReason.loggedOut) {
         console.log('Sessao deslogada. Apague a pasta session e conecte de novo.')
         return

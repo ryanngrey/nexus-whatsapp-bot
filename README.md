@@ -30,20 +30,25 @@ sudo apt-get install -y ffmpeg
 pkg install ffmpeg
 ```
 
-## Ligar o bot
+## Ligar o bot (codigo de pareamento)
+
+O bot conecta no numero `55993511752` por codigo, nao por QR.
 
 ```bash
 npm start
 ```
 
-1. Abra o WhatsApp do numero `55993511752`
-2. Aparelhos conectados > Conectar um aparelho
-3. Escaneie o QR que aparece no terminal
+1. O terminal mostra um codigo de 8 digitos (ex: `ABCD-1234`)
+2. No celular do numero `55993511752` abra o WhatsApp
+3. Aparelhos conectados
+4. Conectar um aparelho
+5. Conectar com numero de telefone
+6. Digite o codigo
 
-Codigo de emparelhamento (opcional):
+QR so se voce pedir:
 
 ```bash
-npm run pair
+npm run qr
 ```
 
 A sessao fica salva em `session/`. Nao apague essa pasta depois de conectar.
