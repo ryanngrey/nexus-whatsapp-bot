@@ -2,8 +2,8 @@
 
 Bot de WhatsApp para grupos com mais de 180 comandos, niveis de cargo e moderacao.
 
-**Numero do bot:** 55993511752  
-**Donos:** 55993511752 e 5569993841805
+**Numero do bot:** 5565993511752  
+**Donos:** 5565993511752 e 5569993841805
 
 ## Requisitos
 
@@ -14,7 +14,7 @@ Bot de WhatsApp para grupos com mais de 180 comandos, niveis de cargo e moderaca
 ## Instalacao
 
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/ryanngrey/nexus-whatsapp-bot.git
 cd nexus-whatsapp-bot
 npm install
 ```
@@ -32,18 +32,20 @@ pkg install ffmpeg
 
 ## Ligar o bot (codigo de pareamento)
 
-O bot conecta no numero `55993511752` por codigo, nao por QR.
+O bot conecta no numero `5565993511752` por codigo, nao por QR.
 
 ```bash
 npm start
 ```
 
 1. O terminal mostra um codigo de 8 digitos (ex: `ABCD-1234`)
-2. No celular do numero `55993511752` abra o WhatsApp
-3. Aparelhos conectados
+2. O WhatsApp de `5565993511752` recebe a notificacao de aparelho
+3. No celular desse numero: Aparelhos conectados
 4. Conectar um aparelho
 5. Conectar com numero de telefone
 6. Digite o codigo
+
+Se o codigo expirar, o bot gera outro sozinho no terminal.
 
 QR so se voce pedir:
 
@@ -74,7 +76,7 @@ Sem isso, o grupo nao usa os comandos.
 
 | Cargo | Quem e | Exemplos |
 | --- | --- | --- |
-| Dono | 55993511752 e 5569993841805 (+ quem o dono adicionar) | addgrupo, adddono, addvip, banuser |
+| Dono | 5565993511752 e 5569993841805 (+ quem o dono adicionar) | addgrupo, adddono, addvip, banuser |
 | Admin | admin do grupo ou admin do bot | ban, apagar, antilink, warn, hidetag |
 | VIP | adicionado com /addvip | wallpaper, pinterest, togif |
 | Membro | qualquer um no grupo autorizado | menu, sticker, brincadeiras, economia |

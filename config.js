@@ -2,9 +2,9 @@ module.exports = {
   botName: 'NEXUS BOT',
   prefix: '/',
   timezone: 'America/Sao_Paulo',
-  botNumber: '55993511752',
+  botNumber: '5565993511752',
   owners: [
-    '55993511752',
+    '5565993511752',
     '5569993841805'
   ],
   sessionFolder: './session',
